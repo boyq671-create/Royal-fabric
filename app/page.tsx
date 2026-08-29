@@ -10,6 +10,7 @@ export default function Home() {
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
   const [selectedImageMap, setSelectedImageMap] = useState({});
+  const [previewImage, setPreviewImage] = useState(null);
 
   const categories = ['All', 'Cotton', 'Natural Crepe', 'Linen', 'Suiting', 'Shirting', 'Silk'];
 
@@ -25,7 +26,6 @@ export default function Home() {
     }
   }
 
-  // Search aur Category Filter Logic
   useEffect(() => {
     let result = products;
     if (selectedCategory !== 'All') {
@@ -40,75 +40,63 @@ export default function Home() {
     setFilteredProducts(result);
   }, [searchQuery, selectedCategory, products]);
 
-  // Wishlist Toggle
   const toggleWishlist = (id) => {
     setWishlist((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
   };
 
-  // Add to Cart
   const addToCart = (product) => {
     const selectedImg = selectedImageMap[product.id] || product.image_url;
     setCart((prev) => [...prev, { ...product, selectedImg }]);
     alert(`${product.title} Cart me add ho gaya! 🛒`);
   };
 
-  // WhatsApp Order Flow
   const handleWhatsAppOrder = (product) => {
-    // ⬇️ APNA WHATSAPP NUMBER YAHAN DALEIN (Country code 91 ke saath, bina + ke)
-    const phone = "919917865672"; 
-    
+    const phone = "919917865672"; // 👈 Yahan apna WhatsApp Number zaroor dalein
     const currentImg = selectedImageMap[product.id] || product.image_url;
-    
-    const message = `Hello Royal Fabric! 👑\n\nMujhe ye product order karna hai:\n*Product:* ${product.title}\n*Category:* ${product.category}\n*Price:* ₹${product.price}\n*Image Link:* ${currentImg}\n\nKripya order details aage confirm karein.`;
-    
-    const encodedMessage = encodeURIComponent(message);
-    window.open(`https://wa.me/${phone}?text=${encodedMessage}`, '_blank');
+    const message = `Hello Royal Fabric! 👑\n\nMujhe ye product order karna hai:\n*Product:* ${product.title}\n*Category:* ${product.category}\n*Price:* ₹${product.price}\n*Image Link:* ${currentImg}`;
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   return (
     <div style={{ fontFamily: "'Poppins', sans-serif", background: '#f8f9fa', minHeight: '100vh', paddingBottom: '60px' }}>
       
-      {/* 👑 Top Navigation Header */}
-      <header style={{ background: '#111', color: '#fff', padding: '15px 20px', position: 'sticky', top: 0, zIndex: 100, display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
-        <h1 style={{ margin: 0, fontSize: '20px', letterSpacing: '2px', fontWeight: '700', color: '#d4af37' }}>ROYAL FABRIC</h1>
+      {/* 👑 Top Header */}
+      <header style={{ background: '#111', color: '#fff', padding: '15px 20px', position: 'sticky', top: 0, zIndex: 100, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h1 style={{ margin: 0, fontSize: '20px', letterSpacing: '2px', color: '#d4af37' }}>ROYAL FABRIC</h1>
         <div style={{ display: 'flex', gap: '15px', fontSize: '16px' }}>
           <span>❤️ <small>({wishlist.length})</small></span>
           <span>🛒 <small>({cart.length})</small></span>
         </div>
       </header>
 
-      {/* 🔍 Search & Banner Section */}
-      <div style={{ padding: '25px 15px', background: '#1a1a1a', color: '#fff', textAlign: 'center' }}>
-        <h2 style={{ fontSize: '22px', marginBottom: '8px', fontWeight: '400' }}>Premium Fabric Collection</h2>
-        <p style={{ color: '#aaa', fontSize: '13px', marginBottom: '20px' }}>Select best quality fabrics directly for your wardrobe</p>
-        
+      {/* 🔍 Search */}
+      <div style={{ padding: '20px 15px', background: '#1a1a1a', color: '#fff', textAlign: 'center' }}>
+        <h2 style={{ fontSize: '20px', marginBottom: '8px' }}>Premium Fabric Collection</h2>
         <input
           type="text"
-          placeholder="🔍 Search fabric, crepe, cotton, linen..."
+          placeholder="🔍 Search fabric, crepe, cotton..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          style={{ width: '90%', maxWidth: '450px', padding: '12px 18px', borderRadius: '30px', border: 'none', outline: 'none', fontSize: '14px' }}
+          style={{ width: '90%', maxWidth: '400px', padding: '10px 15px', borderRadius: '25px', border: 'none' }}
         />
       </div>
 
-      {/* 🏷️ Category Slider */}
-      <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', padding: '12px 20px', background: '#fff', borderBottom: '1px solid #eee' }}>
+      {/* 🏷️ Categories */}
+      <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', padding: '12px 15px', background: '#fff' }}>
         {categories.map((cat) => (
           <button
             key={cat}
             onClick={() => setSelectedCategory(cat)}
             style={{
-              padding: '8px 18px',
-              borderRadius: '25px',
-              border: selectedCategory === cat ? 'none' : '1px solid #ddd',
-              background: selectedCategory === cat ? '#d4af37' : '#fff',
+              padding: '6px 16px',
+              borderRadius: '20px',
+              border: 'none',
+              background: selectedCategory === cat ? '#d4af37' : '#eee',
               color: selectedCategory === cat ? '#fff' : '#333',
-              fontWeight: selectedCategory === cat ? 'bold' : 'normal',
               whiteSpace: 'nowrap',
-              cursor: 'pointer',
-              transition: '0.3s'
+              cursor: 'pointer'
             }}
           >
             {cat}
@@ -117,85 +105,77 @@ export default function Home() {
       </div>
 
       {/* 📦 Product Grid */}
-      <div style={{ maxWidth: '1200px', margin: '20px auto', padding: '0 15px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '20px' }}>
-        {filteredProducts.length === 0 ? (
-          <p style={{ textAlign: 'center', gridColumn: '1/-1', color: '#777', padding: '40px' }}>Koi product nahi mila!</p>
-        ) : (
-          filteredProducts.map((product) => {
-            const isWishlisted = wishlist.includes(product.id);
-            const activeImage = selectedImageMap[product.id] || product.image_url;
+      <div style={{ maxWidth: '1200px', margin: '20px auto', padding: '0 15px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '20px' }}>
+        {filteredProducts.map((product) => {
+          const isWishlisted = wishlist.includes(product.id);
+          const activeImage = selectedImageMap[product.id] || product.image_url;
 
-            return (
-              <div key={product.id} style={{ background: '#fff', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 15px rgba(0,0,0,0.05)', position: 'relative', display: 'flex', flexDirection: 'column' }}>
-                
-                {/* Wishlist Button */}
-                <button
-                  onClick={() => toggleWishlist(product.id)}
-                  style={{ position: 'absolute', top: '12px', right: '12px', background: 'rgba(255,255,255,0.85)', border: 'none', borderRadius: '50%', width: '35px', height: '35px', cursor: 'pointer', zIndex: 10, fontSize: '16px' }}
-                >
-                  {isWishlisted ? '❤️' : '🤍'}
-                </button>
+          return (
+            <div key={product.id} style={{ background: '#fff', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 3px 12px rgba(0,0,0,0.08)', position: 'relative', display: 'flex', flexDirection: 'column' }}>
+              
+              <button
+                onClick={() => toggleWishlist(product.id)}
+                style={{ position: 'absolute', top: '10px', right: '10px', background: '#fff', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', zIndex: 10 }}
+              >
+                {isWishlisted ? '❤️' : '🤍'}
+              </button>
 
-                {/* Main Product Image */}
+              {/* 🖼️ Full Image Container (No Crop) */}
+              <div style={{ background: '#f5f5f5', width: '100%', height: '320px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} onClick={() => setPreviewImage(activeImage)}>
                 <img
                   src={activeImage}
                   alt={product.title}
-                  style={{ width: '100%', height: '260px', objectFit: 'cover' }}
+                  style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#fff' }}
                 />
+              </div>
 
-                {/* Multiple Color/Image Thumbnails */}
-                {product.images && product.images.length > 1 && (
-                  <div style={{ display: 'flex', gap: '6px', padding: '8px 12px', background: '#fafafa', borderBottom: '1px solid #eee', overflowX: 'auto' }}>
-                    {product.images.map((imgUrl, idx) => (
-                      <img
-                        key={idx}
-                        src={imgUrl}
-                        alt="variant"
-                        onClick={() => setSelectedImageMap({ ...selectedImageMap, [product.id]: imgUrl })}
-                        style={{
-                          width: '32px',
-                          height: '32px',
-                          objectFit: 'cover',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          border: activeImage === imgUrl ? '2px solid #d4af37' : '1px solid #ccc'
-                        }}
-                      />
-                    ))}
-                  </div>
-                )}
+              {/* Image Thumbnails */}
+              {product.images && product.images.length > 1 && (
+                <div style={{ display: 'flex', gap: '6px', padding: '8px 10px', background: '#fafafa', overflowX: 'auto', borderTop: '1px solid #eee' }}>
+                  {product.images.map((imgUrl, idx) => (
+                    <img
+                      key={idx}
+                      src={imgUrl}
+                      onClick={() => setSelectedImageMap({ ...selectedImageMap, [product.id]: imgUrl })}
+                      style={{
+                        width: '36px',
+                        height: '36px',
+                        objectFit: 'cover',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        border: activeImage === imgUrl ? '2px solid #d4af37' : '1px solid #ddd'
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
 
-                {/* Details Section */}
-                <div style={{ padding: '15px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                  <div>
-                    <span style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', letterSpacing: '1px' }}>{product.category}</span>
-                    <h3 style={{ fontSize: '16px', margin: '4px 0 6px 0', color: '#222', fontWeight: '600' }}>{product.title}</h3>
-                    <p style={{ fontSize: '12px', color: '#666', margin: '0 0 10px 0', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{product.description}</p>
-                    <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#111', marginBottom: '12px' }}>₹{product.price}</div>
-                  </div>
-
-                  {/* Buttons */}
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button
-                      onClick={() => addToCart(product)}
-                      style={{ flex: 1, padding: '10px', background: '#f0f0f0', border: 'none', borderRadius: '6px', fontWeight: '600', cursor: 'pointer', fontSize: '13px' }}
-                    >
-                      🛒 Add
-                    </button>
-                    <button
-                      onClick={() => handleWhatsAppOrder(product)}
-                      style={{ flex: 1.5, padding: '10px', background: '#25D366', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
-                    >
-                      💬 Buy on WA
-                    </button>
-                  </div>
+              <div style={{ padding: '15px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div>
+                  <small style={{ color: '#888', textTransform: 'uppercase' }}>{product.category}</small>
+                  <h3 style={{ fontSize: '16px', margin: '4px 0 6px 0' }}>{product.title}</h3>
+                  <p style={{ fontSize: '12px', color: '#666', margin: '0 0 10px 0' }}>{product.description}</p>
+                  <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#111', marginBottom: '10px' }}>₹{product.price}</div>
                 </div>
 
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button onClick={() => addToCart(product)} style={{ flex: 1, padding: '10px', background: '#eee', border: 'none', borderRadius: '6px' }}>🛒 Add</button>
+                  <button onClick={() => handleWhatsAppOrder(product)} style={{ flex: 1.5, padding: '10px', background: '#25D366', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold' }}>💬 Buy on WA</button>
+                </div>
               </div>
-            );
-          })
-        )}
+
+            </div>
+          );
+        })}
       </div>
+
+      {/* 🔍 Full Screen Zoom Modal */}
+      {previewImage && (
+        <div onClick={() => setPreviewImage(null)} style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.9)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <span style={{ position: 'absolute', top: '20px', right: '25px', color: '#fff', fontSize: '30px', cursor: 'pointer' }}>✕</span>
+          <img src={previewImage} style={{ maxWidth: '100%', maxHeight: '90vh', objectFit: 'contain', borderRadius: '8px' }} />
+        </div>
+      )}
 
     </div>
   );
