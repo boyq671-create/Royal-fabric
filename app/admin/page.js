@@ -1,6 +1,12 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { supabase } from '@/supabase';
+import { createClient } from '@supabase/supabase-js';
+
+// Aapki Exact Supabase URL aur Anon Key set kar di hai:
+const SUPABASE_URL = 'https://boyq671-create.supabase.co'; 
+const SUPABASE_ANON_KEY = 'sb_publishable_w6bs04y-_cJe8NhN49erNA_gw7oD9js';
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 export default function AdminPage() {
   const [products, setProducts] = useState([]);
