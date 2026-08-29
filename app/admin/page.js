@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { supabase } from '../../supabase';
+import { supabase } from '@/supabase';
 
 export default function AdminPage() {
   const [products, setProducts] = useState([]);
@@ -17,8 +17,13 @@ export default function AdminPage() {
   }, []);
 
   async function fetchProducts() {
-    const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false });
-    if (data) setProducts(data);
+    try {
+      const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+      if (error) console.error(error);
+      if (data) setProducts(data);
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   async function handleAddProduct(e) {
@@ -34,8 +39,7 @@ export default function AdminPage() {
 
       for (let i = 0; i < imageFiles.length; i++) {
         const file = imageFiles[i];
-        const fileExt = file.name.split('.').pop();
-        const cleanFileName = `${Date.now()}_${i}.${fileExt}`;
+        const cleanFileName = `${Date.now()}_${i}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
 
         setStatusMsg(`Uploading photo ${i + 1} of ${imageFiles.length}...`);
 
