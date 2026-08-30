@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-// Aapki Exact Supabase URL aur Anon Key set kar di hai:
 const SUPABASE_URL = 'https://boyq671-create.supabase.co'; 
 const SUPABASE_ANON_KEY = 'sb_publishable_w6bs04y-_cJe8NhN49erNA_gw7oD9js';
 
@@ -12,7 +11,7 @@ export default function AdminPage() {
   const [products, setProducts] = useState([]);
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('Cotton');
-  const [price, setPrice] = useState('');
+  const [phone, setPhone] = useState('');
   const [description, setDescription] = useState('');
   const [imageFiles, setImageFiles] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -34,7 +33,7 @@ export default function AdminPage() {
 
   async function handleAddProduct(e) {
     e.preventDefault();
-    if (!title || !price || imageFiles.length === 0) {
+    if (!title || !phone || imageFiles.length === 0) {
       alert('Kripya details aur kam se kam 1 photo select karein!');
       return;
     }
@@ -68,7 +67,7 @@ export default function AdminPage() {
         {
           title,
           category,
-          price: parseFloat(price),
+          phone,
           description,
           image_url: uploadedUrls[0],
           images: uploadedUrls
@@ -79,7 +78,7 @@ export default function AdminPage() {
 
       alert(`✅ Ready! ${uploadedUrls.length} photos ke saath product add ho gaya!`);
       setTitle('');
-      setPrice('');
+      setPhone('');
       setDescription('');
       setImageFiles([]);
       setStatusMsg('');
@@ -120,8 +119,8 @@ export default function AdminPage() {
           <option value="Silk">Silk</option>
         </select>
 
-        <label>Price (₹):</label>
-        <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} required style={inputStyle} placeholder="1499" />
+        <label>Contact Number:</label>
+        <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required style={inputStyle} placeholder="+91 9876543210" />
 
         <label>Description:</label>
         <textarea value={description} onChange={(e) => setDescription(e.target.value)} style={{ ...inputStyle, height: '60px' }} />
@@ -155,7 +154,7 @@ export default function AdminPage() {
           <img src={p.image_url} alt={p.title} style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '6px' }} />
           <div style={{ flex: 1 }}>
             <strong>{p.title}</strong>
-            <div><small>{p.category} - ₹{p.price}</small></div>
+            <div><small>{p.category} - 📞 {p.phone || 'N/A'}</small></div>
             <div style={{ fontSize: '11px', color: '#777' }}>Total Images: {p.images ? p.images.length : 1}</div>
           </div>
           <button onClick={() => handleDelete(p.id)} style={{ background: '#ff4d4d', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer' }}>Delete</button>
