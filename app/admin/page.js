@@ -2,7 +2,8 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = 'https://boyq671-create.supabase.co'; 
+// Aapki Exact URL aur Anon Key Set kar di gayi hai:
+const SUPABASE_URL = 'https://rwipsolrguuapfpgnrmd.supabase.co'; 
 const SUPABASE_ANON_KEY = 'sb_publishable_w6bs04y-_cJe8NhN49erNA_gw7oD9js';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
