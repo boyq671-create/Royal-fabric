@@ -3,14 +3,14 @@ import { useState, useEffect } from 'react';
 import { supabase } from './supabase';
 
 export default function Home() {
-  const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [products, setProducts] = useState<any[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [cart, setCart] = useState([]);
-  const [wishlist, setWishlist] = useState([]);
-  const [selectedImageMap, setSelectedImageMap] = useState({});
-  const [previewImage, setPreviewImage] = useState(null);
+  const [cart, setCart] = useState<any[]>([]);
+  const [wishlist, setWishlist] = useState<string[]>([]);
+  const [selectedImageMap, setSelectedImageMap] = useState<Record<string, string>>({});
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const categories = ['All', 'Cotton', 'Natural Crepe', 'Linen', 'Suiting', 'Shirting', 'Silk'];
 
@@ -40,35 +40,59 @@ export default function Home() {
     setFilteredProducts(result);
   }, [searchQuery, selectedCategory, products]);
 
-  const toggleWishlist = (id) => {
+  const toggleWishlist = (id: string) => {
     setWishlist((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
   };
 
-  const addToCart = (product) => {
+  const addToCart = (product: any) => {
     const selectedImg = selectedImageMap[product.id] || product.image_url;
     setCart((prev) => [...prev, { ...product, selectedImg }]);
     alert(`${product.title} Cart me add ho gaya! 🛒`);
   };
 
-  const handleWhatsAppOrder = (product) => {
-    const phone = "919917865672"; // 👈 Yahan apna WhatsApp Number zaroor dalein
+  const handleWhatsAppOrder = (product: any) => {
+    const phone = product.phone || "919917865672"; 
     const currentImg = selectedImageMap[product.id] || product.image_url;
-    const message = `Hello Royal Fabric! 👑\n\nMujhe ye product order karna hai:\n*Product:* ${product.title}\n*Category:* ${product.category}\n*Price:* ₹${product.price}\n*Image Link:* ${currentImg}`;
+    const message = `Hello Royal Fabric! 👑\n\nMujhe ye product order karna hai:\n*Product:* ${product.title}\n*Category:* ${product.category}\n*Contact:* ${product.phone || 'N/A'}\n*Image Link:* ${currentImg}`;
     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   return (
     <div style={{ fontFamily: "'Poppins', sans-serif", background: '#f8f9fa', minHeight: '100vh', paddingBottom: '60px' }}>
-      
-      {/* 👑 Top Header */}
-      <header style={{ background: '#111', color: '#fff', padding: '15px 20px', position: 'sticky', top: 0, zIndex: 100, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1 style={{ margin: 0, fontSize: '20px', letterSpacing: '2px', color: '#d4af37' }}>ROYAL FABRIC</h1>
-        <div style={{ display: 'flex', gap: '15px', fontSize: '16px' }}>
-          <span>❤️ <small>({wishlist.length})</small></span>
-          <span>🛒 <small>({cart.length})</small></span>
+      {/* Header Section */}
+      <header style={{ 
+        background: '#111', 
+        color: '#fff', 
+        padding: '12px 16px', 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center' 
+      }}>
+        
+        <div>
+          <h1 style={{ 
+            color: '#d4af37', 
+            margin: 0, 
+            fontSize: '20px', 
+            letterSpacing: '1px', 
+            fontWeight: 'bold' 
+          }}>
+            ROYAL FABRIC
+          </h1>
+          
+          <div style={{ fontSize: '11px', color: '#ccc', marginTop: '4px', lineHeight: '1.4' }}>
+            📍 SHOP NO. 1220/1, MORIGATE, MANIMAJRA, CHD. <br />
+            📞 8273372068 | 9917865672
+          </div>
         </div>
+
+        <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+          <span>❤️ ({wishlist.length})</span>
+          <span>🛒 ({cart.length})</span>
+        </div>
+
       </header>
 
       {/* 🔍 Search */}
@@ -120,7 +144,6 @@ export default function Home() {
                 {isWishlisted ? '❤️' : '🤍'}
               </button>
 
-              {/* 🖼️ Full Image Container (No Crop) */}
               <div style={{ background: '#f5f5f5', width: '100%', height: '320px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} onClick={() => setPreviewImage(activeImage)}>
                 <img
                   src={activeImage}
@@ -129,10 +152,9 @@ export default function Home() {
                 />
               </div>
 
-              {/* Image Thumbnails */}
               {product.images && product.images.length > 1 && (
                 <div style={{ display: 'flex', gap: '6px', padding: '8px 10px', background: '#fafafa', overflowX: 'auto', borderTop: '1px solid #eee' }}>
-                  {product.images.map((imgUrl, idx) => (
+                  {product.images.map((imgUrl: string, idx: number) => (
                     <img
                       key={idx}
                       src={imgUrl}
@@ -155,12 +177,18 @@ export default function Home() {
                   <small style={{ color: '#888', textTransform: 'uppercase' }}>{product.category}</small>
                   <h3 style={{ fontSize: '16px', margin: '4px 0 6px 0' }}>{product.title}</h3>
                   <p style={{ fontSize: '12px', color: '#666', margin: '0 0 10px 0' }}>{product.description}</p>
-                  <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#111', marginBottom: '10px' }}>₹{product.price}</div>
+                  
+                  {/* Price hatakar Contact Number dikhaya hai */}
+                  {product.phone && (
+                    <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#111', marginBottom: '10px' }}>
+                      📞 {product.phone}
+                    </div>
+                  )}
                 </div>
 
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  <button onClick={() => addToCart(product)} style={{ flex: 1, padding: '10px', background: '#eee', border: 'none', borderRadius: '6px' }}>🛒 Add</button>
-                  <button onClick={() => handleWhatsAppOrder(product)} style={{ flex: 1.5, padding: '10px', background: '#25D366', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold' }}>💬 Buy on WA</button>
+                  <button onClick={() => addToCart(product)} style={{ flex: 1, padding: '10px', background: '#eee', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>🛒 Add</button>
+                  <button onClick={() => handleWhatsAppOrder(product)} style={{ flex: 1.5, padding: '10px', background: '#25D366', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>💬 Buy on WA</button>
                 </div>
               </div>
 
@@ -169,7 +197,6 @@ export default function Home() {
         })}
       </div>
 
-      {/* 🔍 Full Screen Zoom Modal */}
       {previewImage && (
         <div onClick={() => setPreviewImage(null)} style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.9)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
           <span style={{ position: 'absolute', top: '20px', right: '25px', color: '#fff', fontSize: '30px', cursor: 'pointer' }}>✕</span>
