@@ -53,10 +53,16 @@ export default function Home() {
   };
 
   const handleWhatsAppOrder = (product: any) => {
-    const phone = product.phone || "919917865672"; 
+    let rawPhone = product.phone ? String(product.phone).replace(/\D/g, '') : "919917865672";
+    
+    if (rawPhone.length === 10) {
+      rawPhone = "91" + rawPhone;
+    }
+
     const currentImg = selectedImageMap[product.id] || product.image_url;
     const message = `Hello Royal Fabric! 👑\n\nMujhe ye product order karna hai:\n*Product:* ${product.title}\n*Category:* ${product.category}\n*Contact:* ${product.phone || 'N/A'}\n*Image Link:* ${currentImg}`;
-    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+    
+    window.open(`https://wa.me/${rawPhone}?text=${encodeURIComponent(message)}`, '_blank');
   };
 
   return (
@@ -178,7 +184,6 @@ export default function Home() {
                   <h3 style={{ fontSize: '16px', margin: '4px 0 6px 0' }}>{product.title}</h3>
                   <p style={{ fontSize: '12px', color: '#666', margin: '0 0 10px 0' }}>{product.description}</p>
                   
-                  {/* Price hatakar Contact Number dikhaya hai */}
                   {product.phone && (
                     <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#111', marginBottom: '10px' }}>
                       📞 {product.phone}
